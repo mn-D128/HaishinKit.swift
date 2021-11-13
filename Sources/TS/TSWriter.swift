@@ -68,6 +68,7 @@ public class TSWriter: Running {
         }
         return false
     }
+    fileprivate var videoCodec: VideoCodec?
 
     public init(segmentDuration: Double = TSWriter.defaultSegmentDuration) {
         self.segmentDuration = segmentDuration
@@ -159,7 +160,11 @@ public class TSWriter: Running {
     }
 
     func rotateFileHandle(_ timestamp: CMTime) {
-        let duration: Double = timestamp.seconds - rotatedTimestamp.seconds
+        var duration: Double = timestamp.seconds - rotatedTimestamp.seconds
+        if let fps = videoCodec?.expectedFPS {
+            duration += CMTime(value: 1, timescale: fps).seconds
+        }
+
         if duration <= segmentDuration {
             return
         }
@@ -252,6 +257,7 @@ extension TSWriter: VideoCodecDelegate {
         PMT.elementaryStreamSpecificData.append(data)
         videoContinuityCounter = 0
         videoConfig = AVCConfigurationRecord(data: avcC)
+        videoCodec = codec
     }
 
     public func videoCodec(_ codec: VideoCodec, didOutput sampleBuffer: CMSampleBuffer) {
@@ -309,7 +315,11 @@ class TSFileWriter: TSWriter {
     }
 
     override func rotateFileHandle(_ timestamp: CMTime) {
-        let duration: Double = timestamp.seconds - rotatedTimestamp.seconds
+        var duration: Double = timestamp.seconds - rotatedTimestamp.seconds
+        if let fps = videoCodec?.expectedFPS {
+            duration += CMTime(value: 1, timescale: fps).seconds
+        }
+
         if duration <= segmentDuration {
             return
         }
