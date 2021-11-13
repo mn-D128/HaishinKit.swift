@@ -315,12 +315,13 @@ class TSFileWriter: TSWriter {
     }
 
     override func rotateFileHandle(_ timestamp: CMTime) {
-        var duration: Double = timestamp.seconds - rotatedTimestamp.seconds
+        let duration: Double = timestamp.seconds - rotatedTimestamp.seconds
+        var nextFrameDuration: Double = 0
         if let fps = videoCodec?.expectedFPS {
-            duration += CMTime(value: 1, timescale: CMTimeScale(fps)).seconds
+            nextFrameDuration = CMTime(value: 1, timescale: CMTimeScale(fps)).seconds
         }
 
-        if duration <= segmentDuration {
+        if duration + nextFrameDuration <= segmentDuration {
             return
         }
         let fileManager = FileManager.default
