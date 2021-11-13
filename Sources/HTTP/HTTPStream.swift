@@ -12,7 +12,13 @@ open class HTTPStream: NetStream {
         }
     }
     private(set) var name: String?
-    private lazy var tsWriter = TSFileWriter()
+    private let segmentDuration: Double
+    private lazy var tsWriter = TSFileWriter(segmentDuration: segmentDuration)
+
+    public init(segmentDuration: Double = TSWriter.defaultSegmentDuration) {
+        self.segmentDuration = segmentDuration
+        super.init()
+    }
 
     open func publish(_ name: String?) {
         lockQueue.async {
