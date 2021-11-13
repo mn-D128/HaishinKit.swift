@@ -162,7 +162,7 @@ public class TSWriter: Running {
     func rotateFileHandle(_ timestamp: CMTime) {
         var duration: Double = timestamp.seconds - rotatedTimestamp.seconds
         if let fps = videoCodec?.expectedFPS {
-            duration += CMTime(value: 1, timescale: fps).seconds
+            duration += CMTime(value: 1, timescale: CMTimeScale(fps)).seconds
         }
 
         if duration <= segmentDuration {
@@ -317,7 +317,7 @@ class TSFileWriter: TSWriter {
     override func rotateFileHandle(_ timestamp: CMTime) {
         var duration: Double = timestamp.seconds - rotatedTimestamp.seconds
         if let fps = videoCodec?.expectedFPS {
-            duration += CMTime(value: 1, timescale: fps).seconds
+            duration += CMTime(value: 1, timescale: CMTimeScale(fps)).seconds
         }
 
         if duration <= segmentDuration {
