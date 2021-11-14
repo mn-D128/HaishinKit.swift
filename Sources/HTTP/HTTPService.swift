@@ -182,7 +182,12 @@ open class HTTPService: NetService {
 """
     }
 
-    var document: String = HTTPService.defaultDocument
+    var document: String
+
+    public override init(domain: String, type: String, name: String, port: Int32) {
+        document = Self.defaultDocument
+        super.init(domain: domain, type: type, name: name, port: port)
+    }
 
     func client(inputBuffer client: NetClient) {
         guard let request = HTTPRequest(data: client.inputBuffer) else {
